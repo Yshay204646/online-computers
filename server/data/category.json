@@ -1,0 +1,18 @@
+[
+  {
+    "id": "laptops",
+    "name": "מחשבים ניידים"
+  },
+  {
+    "id": "desktops",
+    "name": "מחשבים שולחניים"
+  },
+  {
+    "id": "monitors",
+    "name": "מסכים"
+  },
+  {
+    "id": "accessories",
+    "name": "אביזרים"
+  }
+]

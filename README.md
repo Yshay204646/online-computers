@@ -44,14 +44,24 @@ The React app is available at <http://localhost:5173> and the API at
 │   ├── package.json
 │   └── vite.config.js
 ├── server/                 # Express API
+│   ├── controller/
+│   │   ├── category.js     # Category request handlers
+│   │   └── product.js      # Product request handlers
+│   ├── data/
+│   │   ├── category.json  # Categories
+│   │   └── product.json   # Products
+│   ├── route/
+│   │   ├── category.js    # Category endpoints
+│   │   └── product.js     # Product and comparison endpoints
 │   ├── package.json
 │   └── server.js
 └── package.json            # Runs client and server together
 ```
 
 The API includes `GET /api/health`, `GET /api/products`,
-`GET /api/products/:id`, and `POST /api/compare`. Product and comparison data
-are currently held in memory; restarting the server resets them.
+`GET /api/products/:id`, `GET /api/categories`, `GET /api/categories/:id`, and
+`POST /api/compare`. Product data is stored in `server/data/product.json` and
+category data is stored in `server/data/category.json`.
 
 The main navigation includes the home page, product catalog, customer service,
 sign-in, registration, about, and contact pages, as well as product comparison

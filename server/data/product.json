@@ -1,0 +1,92 @@
+[
+  {
+    "id": "laptop-pro-14",
+    "name": "פרובוק 14",
+    "category": "מחשבים ניידים",
+    "price": 5299,
+    "brand": "נובה",
+    "rating": 4.8,
+    "description": "מחשב נייד וקל לעבודה, ללימודים וליצירה.",
+    "specs": {
+      "processor": "Core i7",
+      "memory": "16 ג״ב",
+      "storage": "512 ג״ב SSD",
+      "screen": "14 אינץ׳"
+    }
+  },
+  {
+    "id": "laptop-air-15",
+    "name": "איירבוק 15",
+    "category": "מחשבים ניידים",
+    "price": 4299,
+    "brand": "נובה",
+    "rating": 4.6,
+    "description": "מחשב נייד דק לשימוש יומיומי, עם מסך גדול ובהיר.",
+    "specs": {
+      "processor": "Core i5",
+      "memory": "16 ג״ב",
+      "storage": "512 ג״ב SSD",
+      "screen": "15.6 אינץ׳"
+    }
+  },
+  {
+    "id": "desktop-studio",
+    "name": "מחשב שולחני סטודיו",
+    "category": "מחשבים שולחניים",
+    "price": 6499,
+    "brand": "ורטקס",
+    "rating": 4.7,
+    "description": "תחנת עבודה שולחנית חזקה למשימות תובעניות.",
+    "specs": {
+      "processor": "Ryzen 7",
+      "memory": "32 ג״ב",
+      "storage": "1 טרה־בייט SSD",
+      "screen": "לא כלול"
+    }
+  },
+  {
+    "id": "monitor-ultra-27",
+    "name": "אולטרה־ויו 27",
+    "category": "מסכים",
+    "price": 1599,
+    "brand": "ויוופוינט",
+    "rating": 4.5,
+    "description": "מסך חד בגודל 27 אינץ׳ לעבודה ולבידור.",
+    "specs": {
+      "processor": "4K UHD",
+      "memory": "60 הרץ",
+      "storage": "פאנל IPS",
+      "screen": "27 אינץ׳"
+    }
+  },
+  {
+    "id": "keyboard-mech",
+    "name": "מקלדת מכנית",
+    "category": "אביזרים",
+    "price": 399,
+    "brand": "קייוורקס",
+    "rating": 4.4,
+    "description": "מקלדת מכנית נוחה עם מקשים מהירים ומדויקים.",
+    "specs": {
+      "processor": "מכנית",
+      "memory": "87 מקשים",
+      "storage": "USB-C",
+      "screen": "לא רלוונטי"
+    }
+  },
+  {
+    "id": "mouse-wireless",
+    "name": "עכבר אלחוטי מדויק",
+    "category": "אביזרים",
+    "price": 249,
+    "brand": "קייוורקס",
+    "rating": 4.3,
+    "description": "עכבר אלחוטי אמין עם רמת דיוק מתכווננת.",
+    "specs": {
+      "processor": "אופטי",
+      "memory": "1600 DPI",
+      "storage": "Bluetooth",
+      "screen": "לא רלוונטי"
+    }
+  }
+]
