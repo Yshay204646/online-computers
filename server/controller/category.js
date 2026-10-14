@@ -1,11 +1,17 @@
-const categories = require("../data/category.json");
+const prisma = require("../lib/prisma");
 
-function getCategories(_request, response) {
+async function getCategories(_request, response) {
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" }
+  });
+
   return response.json(categories);
 }
 
-function getCategoryById(request, response) {
-  const category = categories.find((item) => item.id === request.params.id);
+async function getCategoryById(request, response) {
+  const category = await prisma.category.findUnique({
+    where: { id: request.params.id }
+  });
 
   if (!category) {
     return response.status(404).json({ error: "הקטגוריה לא נמצאה." });

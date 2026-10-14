@@ -50,9 +50,16 @@ The React app is available at <http://localhost:5173> and the API at
 │   ├── data/
 │   │   ├── category.json  # Categories
 │   │   └── product.json   # Products
+│   ├── lib/
+│   │   ├── asyncHandler.js # Async Express error forwarding
+│   │   └── prisma.js       # Shared Prisma client
+│   ├── prisma/
+│   │   ├── schema.prisma   # MySQL database schema
+│   │   └── seed.js         # Imports the JSON catalog into MySQL
 │   ├── route/
 │   │   ├── category.js    # Category endpoints
 │   │   └── product.js     # Product and comparison endpoints
+│   ├── .env.example       # MySQL connection string template
 │   ├── package.json
 │   └── server.js
 └── package.json            # Runs client and server together
@@ -60,10 +67,47 @@ The React app is available at <http://localhost:5173> and the API at
 
 The API includes `GET /api/health`, `GET /api/products`,
 `GET /api/products/:id`, `GET /api/categories`, `GET /api/categories/:id`, and
-`POST /api/compare`. Product data is stored in `server/data/product.json` and
-category data is stored in `server/data/category.json`.
+`POST /api/compare`. The API reads products and categories from MySQL through
+Prisma. The JSON files in `server/data/` provide the initial data for seeding.
 
 The main navigation includes the home page, product catalog, customer service,
 sign-in, registration, about, and contact pages, as well as product comparison
 and the shopping cart. Sign-in and registration are display-only placeholders;
 authentication and contact handling are not connected yet.
+
+## MySQL database
+
+The Prisma schema is in `server/prisma/schema.prisma`. It defines products,
+categories, users, addresses, carts, and orders. On this machine MySQL 8.4.9
+was installed for the current user, and the local database was created and
+seeded. To set up another environment:
+
+1. Start MySQL and create a database named `online_computers`.
+2. Copy `server/.env.example` to `server/.env` and set `DATABASE_URL` to your
+   MySQL connection string.
+3. From the project root, install Prisma, create the tables, and seed the
+   database:
+
+   ```sh
+   npm install --prefix server
+   npm --prefix server run db:generate
+   npm --prefix server run db:migrate:init
+   npm --prefix server run db:seed
+   ```
+
+To run the local MySQL server later, open a separate VS Code terminal and run:
+
+```powershell
+npm --prefix server run db:start
+```
+
+Leave that terminal running, then start the app in another terminal with
+`npm run dev`.
+
+The seed command imports the current category and product JSON files into the
+database. Product and category API requests now read from MySQL through Prisma.
+The API connects to MySQL when it starts and exits with an explicit error if
+`DATABASE_URL` is missing or the database is unavailable. The health endpoint
+also checks the database connection.
+
+Use `npm --prefix server run db:migrate` for subsequent schema changes.

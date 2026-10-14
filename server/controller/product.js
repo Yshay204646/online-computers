@@ -1,20 +1,38 @@
-const products = require("../data/product.json");
+const prisma = require("../lib/prisma");
 
-function getProducts(_request, response) {
-  return response.json(products);
+function serializeProduct(product) {
+  return {
+    ...product,
+    price: Number(product.price),
+    rating: Number(product.rating),
+    category: product.category.name
+  };
 }
 
-function getProductById(request, response) {
-  const product = products.find((item) => item.id === request.params.id);
+async function getProducts(_request, response) {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    include: { category: true },
+    orderBy: { createdAt: "asc" }
+  });
+
+  return response.json(products.map(serializeProduct));
+}
+
+async function getProductById(request, response) {
+  const product = await prisma.product.findFirst({
+    where: { id: request.params.id, isActive: true },
+    include: { category: true }
+  });
 
   if (!product) {
     return response.status(404).json({ error: "המוצר לא נמצא." });
   }
 
-  return response.json(product);
+  return response.json(serializeProduct(product));
 }
 
-function compareProducts(request, response) {
+async function compareProducts(request, response) {
   const { productIds } = request.body ?? {};
 
   if (
@@ -29,13 +47,23 @@ function compareProducts(request, response) {
   }
 
   const uniqueIds = [...new Set(productIds)];
-  const selectedProducts = uniqueIds.map((id) => products.find((item) => item.id === id));
+  if (uniqueIds.length < 2) {
+    return response.status(400).json({
+      error: "יש לבחור לפחות שני מוצרים שונים להשוואה."
+    });
+  }
 
-  if (selectedProducts.some((product) => !product)) {
+  const foundProducts = await prisma.product.findMany({
+    where: { id: { in: uniqueIds }, isActive: true },
+    include: { category: true }
+  });
+
+  if (foundProducts.length !== uniqueIds.length) {
     return response.status(404).json({ error: "אחד או יותר מהמוצרים שנבחרו לא נמצאו." });
   }
 
-  return response.json(selectedProducts);
+  const productsById = new Map(foundProducts.map((product) => [product.id, product]));
+  return response.json(uniqueIds.map((id) => serializeProduct(productsById.get(id))));
 }
 
 module.exports = { getProducts, getProductById, compareProducts };

@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Category {
+  id        String    @id @db.VarChar(64)
+  name      String    @unique @db.VarChar(100)
+  products  Product[]
+  createdAt DateTime  @default(now()) @db.DateTime(3)
+  updatedAt DateTime  @updatedAt @db.DateTime(3)
+}
+
+model Product {
+  id          String      @id @db.VarChar(100)
+  name        String      @db.VarChar(200)
+  description String      @db.Text
+  brand       String      @db.VarChar(100)
+  price       Decimal     @db.Decimal(10, 2)
+  rating      Decimal     @db.Decimal(2, 1)
+  stock       Int         @default(0)
+  specs       Json
+  isActive    Boolean     @default(true)
+  categoryId  String      @db.VarChar(64)
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now()) @db.DateTime(3)
+  updatedAt   DateTime    @updatedAt @db.DateTime(3)
+
+  @@index([categoryId])
+  @@index([isActive, createdAt])
+}
+
+model User {
+  id           String    @id @default(cuid()) @db.VarChar(191)
+  email        String    @unique @db.VarChar(191)
+  passwordHash String    @db.VarChar(255)
+  firstName    String    @db.VarChar(100)
+  lastName     String    @db.VarChar(100)
+  phone        String?   @db.VarChar(30)
+  role         UserRole  @default(CUSTOMER)
+  addresses    Address[]
+  cart         Cart?
+  orders       Order[]
+  createdAt    DateTime  @default(now()) @db.DateTime(3)
+  updatedAt    DateTime  @updatedAt @db.DateTime(3)
+}
+
+model Address {
+  id            String   @id @default(cuid()) @db.VarChar(191)
+  userId        String   @db.VarChar(191)
+  fullName      String   @db.VarChar(200)
+  phone         String   @db.VarChar(30)
+  addressLine1  String   @db.VarChar(255)
+  addressLine2  String?  @db.VarChar(255)
+  city          String   @db.VarChar(100)
+  postalCode    String?  @db.VarChar(20)
+  country       String   @default("IL") @db.Char(2)
+  isDefault     Boolean  @default(false)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
+  createdAt     DateTime @default(now()) @db.DateTime(3)
+  updatedAt     DateTime @updatedAt @db.DateTime(3)
+
+  @@index([userId])
+}
+
+model Cart {
+  id        String     @id @default(cuid()) @db.VarChar(191)
+  userId    String     @unique @db.VarChar(191)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now()) @db.DateTime(3)
+  updatedAt DateTime   @updatedAt @db.DateTime(3)
+}
+
+model CartItem {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  cartId    String   @db.VarChar(191)
+  productId String   @db.VarChar(100)
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.DateTime(3)
+  updatedAt DateTime @updatedAt @db.DateTime(3)
+
+  @@unique([cartId, productId])
+  @@index([productId])
+}
+
+model Order {
+  id                   String        @id @default(cuid()) @db.VarChar(191)
+  orderNumber          String        @unique @default(cuid()) @db.VarChar(191)
+  userId               String        @db.VarChar(191)
+  addressId            String?       @db.VarChar(191)
+  status               OrderStatus   @default(PENDING)
+  paymentStatus        PaymentStatus @default(PENDING)
+  currency             String        @default("ILS") @db.Char(3)
+  subtotal             Decimal       @db.Decimal(10, 2)
+  shippingCost         Decimal       @default(0) @db.Decimal(10, 2)
+  total                Decimal       @db.Decimal(10, 2)
+  shippingFullName     String        @db.VarChar(200)
+  shippingPhone        String        @db.VarChar(30)
+  shippingAddressLine1 String        @db.VarChar(255)
+  shippingAddressLine2 String?       @db.VarChar(255)
+  shippingCity         String        @db.VarChar(100)
+  shippingPostalCode   String?       @db.VarChar(20)
+  shippingCountry      String        @default("IL") @db.Char(2)
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  address              Address?      @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  items                OrderItem[]
+  createdAt            DateTime      @default(now()) @db.DateTime(3)
+  updatedAt            DateTime      @updatedAt @db.DateTime(3)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid()) @db.VarChar(191)
+  orderId     String   @db.VarChar(191)
+  productId   String?  @db.VarChar(100)
+  productName String   @db.VarChar(200)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  quantity    Int
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now()) @db.DateTime(3)
+
+  @@index([orderId])
+  @@index([productId])
+}
