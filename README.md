@@ -78,34 +78,30 @@ authentication and contact handling are not connected yet.
 ## MySQL database
 
 The Prisma schema is in `server/prisma/schema.prisma`. It defines products,
-categories, users, addresses, carts, and orders. On this machine MySQL 8.4.9
-was installed for the current user, and the local database was created and
-seeded. To set up another environment:
+categories, users, addresses, carts, and orders. To set up another environment:
 
 1. Start MySQL and create a database named `online_computers`.
 2. Copy `server/.env.example` to `server/.env` and set `DATABASE_URL` to your
    MySQL connection string.
-3. From the project root, install Prisma, create the tables, and seed the
-   database:
+3. Install dependencies and start the app from the project root:
 
    ```sh
+   npm install
    npm install --prefix server
-   npm --prefix server run db:generate
-   npm --prefix server run db:migrate:init
-   npm --prefix server run db:seed
+   npm install --prefix client
+   npm run dev
    ```
 
-To run the local MySQL server later, open a separate VS Code terminal and run:
+Starting the server automatically applies pending migrations and imports the
+categories and products from `server/data/` into MySQL. The seed uses upserts,
+so restarting the app updates the catalog without creating duplicate rows. To
+run the local MySQL server separately, use:
 
 ```powershell
 npm --prefix server run db:start
 ```
 
-Leave that terminal running, then start the app in another terminal with
-`npm run dev`.
-
-The seed command imports the current category and product JSON files into the
-database. Product and category API requests now read from MySQL through Prisma.
+Product and category API requests read from MySQL through Prisma.
 The API connects to MySQL when it starts and exits with an explicit error if
 `DATABASE_URL` is missing or the database is unavailable. The health endpoint
 also checks the database connection.

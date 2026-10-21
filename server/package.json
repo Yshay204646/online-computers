@@ -4,8 +4,11 @@
   "private": true,
   "main": "server.js",
   "scripts": {
+    "prestart": "npm run db:setup",
     "start": "node server.js",
+    "predev": "npm run db:setup",
     "dev": "nodemon server.js",
+    "db:setup": "prisma migrate deploy && npm run db:seed",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:init": "prisma migrate dev --name init",
